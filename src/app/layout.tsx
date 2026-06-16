@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   description: "Build, deploy, and manage intelligent AI agents for customer support, research, and workflow automation.",
 };
 
+import { AuthProvider } from "@/components/shared/auth-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,7 +35,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }
