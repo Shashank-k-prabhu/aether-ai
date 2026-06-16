@@ -1,65 +1,74 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Container } from "@/components/shared/container";
 import { Section } from "@/components/shared/section";
 
 const faqs = [
   {
-    q: "How long does it take to deploy an agent?",
-    a: "Most teams go from zero to production in under 48 hours. We provide pre-built templates for common use cases, and our onboarding team helps with custom integrations.",
+    q: "How does Aether AI handle data security and SOC 2 compliance?",
+    a: "We are SOC 2 Type II certified. All agent logs, traces, and data payloads are encrypted at rest (AES-256) and in transit (TLS 1.3). Access to third-party endpoints is protected via encrypted environment values with strict RBAC.",
   },
   {
-    q: "Do I need ML expertise to use Aether?",
-    a: "No. Aether is designed for engineering teams, not ML researchers. You define agent goals in plain language or via our API — we handle the model layer.",
+    q: "What is the typical deployment timeline for a custom agent?",
+    a: "Standard agents using pre-built templates are running in sandbox environments within 24 hours. Custom agents with bespoke workflow logic typically take 3–5 business days to align and verify in staging.",
   },
   {
-    q: "How does Aether handle security and compliance?",
-    a: "Aether is SOC 2 Type II certified. All agent decisions are logged, data is encrypted at rest and in transit, and you get fine-grained RBAC for every resource.",
+    q: "Can agents connect to legacy internal databases and on-prem systems?",
+    a: "Yes. Aether supports secure connections via SSH tunneling, IP whitelisting, or our secure connector gateway that runs locally inside your private subnet without exposing data externally.",
   },
   {
-    q: "Can agents access our internal databases and tools?",
-    a: "Yes. Aether has native connectors for Postgres, MySQL, Salesforce, HubSpot, Slack, GitHub, Jira, and 40+ other tools. Custom connectors are available via REST API.",
+    q: "How are task execution failures handled?",
+    a: "On unexpected failures, the runtime logs the full trace, triggers an automatic fallback retry loop, and sends a secure alert to your designated on-call operator if manual resolution is needed.",
   },
   {
-    q: "What happens if an agent makes a mistake?",
-    a: "Every action is logged with a full audit trail. You can set human-in-the-loop checkpoints for high-stakes tasks, and agents can be rolled back or paused at any time.",
+    q: "How does pricing scale with usage?",
+    a: "Pricing is based on active agent runtime hours and task execution volume. Enterprise contracts are available for dedicated sandboxed runtimes and unlimited execution traces.",
   },
   {
-    q: "Is there a free tier?",
-    a: "Yes — start free with up to 3 agents and 1,000 task runs per month. Upgrade to a team or enterprise plan as you scale.",
+    q: "What integrations come out of the box?",
+    a: "Native connectors include Slack, GitHub, Jira, HubSpot, Salesforce, Stripe, Postgres, MySQL, and 40+ enterprise tools. Custom connectors are available via our REST API or webhook event system.",
   },
 ];
 
 export function Faq() {
   return (
-    <Section>
+    <Section className="bg-black py-24 border-t border-zinc-900">
       <Container>
-        <div className="max-w-2xl mb-16">
-          <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">
+        <div className="max-w-2xl mb-16 text-left">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-primary mb-3">
             FAQ
           </p>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-100">
             Common questions.
           </h2>
         </div>
 
-        <Accordion type="single" collapsible className="max-w-3xl divide-y divide-border">
-          {faqs.map((faq, i) => (
-            <AccordionItem
-              key={i}
-              value={`item-${i}`}
-              className="border-0 py-1"
-            >
-              <AccordionTrigger className="text-sm font-semibold text-foreground hover:text-primary hover:no-underline transition-colors text-left">
-                {faq.q}
-              </AccordionTrigger>
-              <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-                {faq.a}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="max-w-3xl"
+        >
+          <Accordion type="single" collapsible className="w-full divide-y divide-zinc-900 border-t border-zinc-900">
+            {faqs.map((faq, i) => (
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="border-b-0 py-1"
+              >
+                <AccordionTrigger className="text-[13px] font-semibold text-zinc-200 hover:text-primary hover:no-underline transition-colors text-left font-mono py-4">
+                  {faq.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-[13px] text-zinc-400 leading-[1.75] pb-4">
+                  {faq.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </motion.div>
       </Container>
     </Section>
   );

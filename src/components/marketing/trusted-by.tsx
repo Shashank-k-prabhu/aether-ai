@@ -1,35 +1,53 @@
-import { Badge } from "@/components/ui/badge";
+"use client";
+
+import { motion } from "framer-motion";
 import { Container } from "@/components/shared/container";
 
 const companies = [
-  "Stripe",
-  "Vercel",
-  "Linear",
-  "Notion",
-  "Figma",
-  "GitHub",
-  "Anthropic",
-  "Datadog",
+  "AeroSpace Dynamics",
+  "Vanguard Capital",
+  "Apex Supply Chain",
+  "Crest Life Sciences",
+  "Sentinel Cyber",
+  "Core Systems",
 ];
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 0.35, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+};
 
 export function TrustedBy() {
   return (
-    <section className="border-y border-border py-12 bg-card/30">
+    <section className="border-y border-zinc-900 py-14 bg-black">
       <Container>
-        <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-8">
-          Trusted by engineering teams at
+        <p className="text-center text-[10px] font-mono uppercase tracking-widest text-zinc-600 mb-10">
+          Powering critical workflows at scale
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-3">
+        <motion.div
+          className="flex flex-wrap items-center justify-center gap-x-14 gap-y-7 max-w-4xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px" }}
+        >
           {companies.map((name) => (
-            <Badge
+            <motion.div
               key={name}
-              variant="outline"
-              className="border-border text-muted-foreground/60 hover:text-muted-foreground hover:border-muted-foreground/40 transition-colors text-xs font-medium px-4 py-1.5 cursor-default"
+              variants={itemVariants}
+              whileHover={{ opacity: 0.85, scale: 1.02 }}
+              transition={{ duration: 0.15 }}
+              className="text-sm md:text-[15px] font-semibold font-mono tracking-tight text-zinc-100 cursor-default select-none"
             >
-              {name}
-            </Badge>
+              {name.toUpperCase()}
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </Container>
     </section>
   );
