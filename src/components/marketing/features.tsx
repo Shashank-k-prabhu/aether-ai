@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { Container } from "@/components/shared/container";
 import { Section } from "@/components/shared/section";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -33,14 +34,14 @@ const capabilities = [
   },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.08 } },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
 export function Features() {

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 import { Container } from "@/components/shared/container";
 
 const companies = [
@@ -12,14 +13,14 @@ const companies = [
   "Core Systems",
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.07 } },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 8 },
-  visible: { opacity: 0.35, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  visible: { opacity: 0.35, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
 export function TrustedBy() {
