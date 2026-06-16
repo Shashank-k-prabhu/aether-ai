@@ -1,14 +1,15 @@
-import { Schema, model, models, Document, Types } from 'mongoose';
+import { Schema, model, models, Types } from 'mongoose';
 
 export interface IAgent {
+  _id?: string;
   name: string;
   description: string;
   status: 'active' | 'inactive';
   type: 'support' | 'research' | 'workflow' | 'integration';
-  createdBy: Types.ObjectId;
+  createdBy: Types.ObjectId | string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
-
-export type IAgentDocument = IAgent & Document;
 
 const AgentSchema = new Schema<IAgent>(
   {
@@ -25,5 +26,6 @@ const AgentSchema = new Schema<IAgent>(
   { timestamps: true }
 );
 
-const Agent = models.Agent ?? model<IAgentDocument>('Agent', AgentSchema);
+const Agent = models.Agent ?? model<IAgent>('Agent', AgentSchema);
 export default Agent;
+

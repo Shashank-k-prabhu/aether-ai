@@ -1,13 +1,14 @@
-import { Schema, model, models, Document } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 
 export interface IUser {
+  _id?: string;
   name: string;
   email: string;
   password: string;
   role: 'admin' | 'user';
+  createdAt?: Date;
+  updatedAt?: Date;
 }
-
-export type IUserDocument = IUser & Document;
 
 const UserSchema = new Schema<IUser>(
   {
@@ -19,5 +20,5 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-const User = models.User ?? model<IUserDocument>('User', UserSchema);
+const User = models.User ?? model<IUser>('User', UserSchema);
 export default User;
