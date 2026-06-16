@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { Hero } from "@/components/marketing/hero";
+import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { TrustedBy } from "@/components/marketing/trusted-by";
 import { Features } from "@/components/marketing/features";
 import { HowItWorks } from "@/components/marketing/how-it-works";
@@ -14,6 +15,7 @@ export default function Home() {
       <Navbar />
       <main className="flex-1">
         <Hero />
+        <DashboardPreview />
         <TrustedBy />
         <Features />
         <HowItWorks />
