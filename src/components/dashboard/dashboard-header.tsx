@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, Bell, Shield, Terminal, LogOut, ExternalLink } from "lucide-react";
+import { Menu, Terminal, LogOut, ExternalLink } from "lucide-react";
 import { DashboardSidebar } from "./dashboard-sidebar";
 
 interface HeaderProps {

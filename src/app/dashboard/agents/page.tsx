@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -40,7 +39,6 @@ import {
   Pause,
   AlertTriangle,
   Bot,
-  Terminal,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -70,7 +68,6 @@ interface Agent {
 }
 
 export default function AgentsPage() {
-  const { data: session } = useSession();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -97,11 +94,11 @@ export default function AgentsPage() {
     watch,
     formState: { errors },
   } = useForm<AgentFormValues>({
-    resolver: async (data, context, options) => {
+    resolver: async (data) => {
       // Inline validator using safeParse to avoid resolver dependency package resolution issues
       const result = agentSchema.safeParse(data);
       if (!result.success) {
-        const fieldErrors: Record<string, any> = {};
+        const fieldErrors: Record<string, { message: string }> = {};
         result.error.issues.forEach((issue) => {
           const path = issue.path[0] as string;
           fieldErrors[path] = { message: issue.message };
@@ -189,6 +186,7 @@ export default function AgentsPage() {
         setFormError(errData.error || "Something went wrong.");
       }
     } catch (err) {
+      console.error(err);
       setFormError("Network error. Please try again.");
     } finally {
       setSubmitting(false);
@@ -336,7 +334,7 @@ export default function AgentsPage() {
             <div className="space-y-2 max-w-md mx-auto">
               <h3 className="text-sm font-semibold text-white font-mono uppercase">No Agents Provisioned</h3>
               <p className="text-xs text-zinc-500 leading-relaxed">
-                You haven't registered any autonomous agents yet. Get started by provisioning your first AI model integrations.
+                You haven&apos;t registered any autonomous agents yet. Get started by provisioning your first AI model integrations.
               </p>
             </div>
             <Button
@@ -522,7 +520,7 @@ export default function AgentsPage() {
                 <Label htmlFor="type" className="text-xs font-mono text-zinc-400 uppercase">
                   Classification
                 </Label>
-                <Select value={typeValue} onValueChange={(val) => setValue("type", val as any)}>
+                <Select value={typeValue} onValueChange={(val) => setValue("type", val as "assistant" | "copilot" | "custom")}>
                   <SelectTrigger className="w-full h-9 border-zinc-900 bg-zinc-900/50 text-xs text-white font-mono rounded-lg">
                     <SelectValue placeholder="Select classification" />
                   </SelectTrigger>
@@ -538,7 +536,7 @@ export default function AgentsPage() {
                 <Label htmlFor="status" className="text-xs font-mono text-zinc-400 uppercase">
                   Initial Status
                 </Label>
-                <Select value={statusValue} onValueChange={(val) => setValue("status", val as any)}>
+                <Select value={statusValue} onValueChange={(val) => setValue("status", val as "idle" | "running" | "paused" | "failed")}>
                   <SelectTrigger className="w-full h-9 border-zinc-900 bg-zinc-900/50 text-xs text-white font-mono rounded-lg">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>

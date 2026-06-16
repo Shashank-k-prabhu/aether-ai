@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Container } from "@/components/shared/container";
 import { Section } from "@/components/shared/section";
-import { Bot, Search, GitBranch, Database, Check, ArrowRight } from "lucide-react";
+import { Bot, Search, GitBranch, Check, ArrowRight } from "lucide-react";
 
 const services = [
   {

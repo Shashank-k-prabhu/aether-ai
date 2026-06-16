@@ -11,8 +11,7 @@ import {
   Users,
   LogOut,
   Terminal,
-  Shield,
-  Settings
+  Shield
 } from "lucide-react";
 
 interface SidebarProps {
