@@ -212,25 +212,23 @@ src/
 
 ### What I actually used it for
 
-I used AI as a force multiplier for **structure and boilerplate** — not for product decisions. Things like: wiring up the NextAuth JWT + session callbacks, scaffolding the Zod schemas, and generating the initial CRUD form with the slide-out Sheet component. I'd describe exactly what I wanted, review the output, tweak it, and move on.
+I used AI as a force multiplier for **structure and boilerplate**, not for product decisions. Things like: wiring up the NextAuth JWT + session callbacks, scaffolding the Zod schemas, and generating the initial CRUD form with the slide-out Sheet component. I'd describe exactly what I wanted, review the output, tweak it, and move on.
 
 ### A prompt I accepted almost as-is
 
-I asked it to write the `authorize()` callback in `lib/auth.ts` — the bcrypt comparison, the specific error messages ("No account found with that email" vs "Incorrect password"), and the JWT/session callback chain. The output was clean and production-ready. I kept it because it matched how I'd write it myself — it already knew to lowercase and trim the email before the DB query, which is an easy bug to miss.
+I asked it to write the `authorize()` callback in `lib/auth.ts`: the bcrypt comparison, the specific error messages ("No account found with that email" vs "Incorrect password"), and the JWT/session callback chain. The output was clean and production-ready. I kept it because it matched how I'd write it myself; it already knew to lowercase and trim the email before the DB query, which is an easy bug to miss.
 
 ### Where it got it wrong and I corrected it
 
 Two places stand out.
 
-**1. Hardcoded dashboard stats.** The first version of the dashboard overview had `"Active Agents: 0"` and `"Total Users: 1"` — just static placeholder strings. I caught this, pushed back, and told it to replace them with real `countDocuments()` queries from MongoDB. More importantly, I specified the scoping rule: admins get totals across all users, regular users get counts scoped to their own `createdBy` field. That business rule wasn't in the initial code — I had to drive it.
+**1. Hardcoded dashboard stats.** The first version of the dashboard overview had `"Active Agents: 0"` and `"Total Users: 1"`, just static placeholder strings. I caught this, pushed back, and told it to replace them with real `countDocuments()` queries from MongoDB. More importantly, I specified the scoping rule: admins get totals across all users, regular users get counts scoped to their own `createdBy` field. That business rule wasn't in the initial code; I had to drive it.
 
-**2. Client-side fetch for dashboard stats.** It initially suggested using `useEffect` + a fetch call to `/api/agents` to get the count. I overruled it — the dashboard page is a server component, so I can query MongoDB directly at render time. No extra API route, no client-side loading state, one fewer network round-trip. That was a technical judgement call I made, not the AI.
+**2. Client-side fetch for dashboard stats.** It initially suggested using `useEffect` + a fetch call to `/api/agents` to get the count. I overruled it; the dashboard page is a server component, so I can query MongoDB directly at render time. No extra API route, no client-side loading state, one fewer network round-trip. That was a technical judgement call I made, not the AI.
 
 ### My honest take
 
-AI is fast at generating structurally correct code. What it doesn't know is *your product* — the business rules, which UX trade-offs matter, what the feature is actually supposed to do. I found myself using it most effectively when I already had a clear picture of what I wanted and just needed it faster. The parts of the code I'm most satisfied with (role-based scoping, the redirect logic, the stat queries, the delete-self guard on the users table) all required me to think through the decision before the AI could help with implementation.
-
----
+AI is fast at generating structurally correct code. What it doesn't know is *your product*: the business rules, which UX trade-offs matter, what the feature is actually supposed to do. I found myself using it most effectively when I already had a clear picture of what I wanted and just needed it faster. The parts of the code I'm most satisfied with (role-based scoping, the redirect logic, the stat queries, the delete-self guard on the users table) all required me to think through the decision before the AI could help with implementation.
 
 ## ⚙️ CI/CD
 

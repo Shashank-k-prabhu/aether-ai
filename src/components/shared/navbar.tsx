@@ -6,10 +6,19 @@ import { useState } from "react";
 import { Container } from "./container";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: session } = useSession();
+
+  const userInitials = session?.user?.name
+    ? session.user.name.split(" ").map((n) => n[0]).join("").toUpperCase()
+    : session?.user?.email
+    ? session.user.email[0].toUpperCase()
+    : "U";
 
   const navLinks = [
     { href: "/about", label: "About" },
@@ -45,12 +54,35 @@ export function Navbar() {
 
         {/* Desktop actions */}
         <div className="hidden md:flex items-center gap-4">
-          <Button asChild variant="ghost" className="text-zinc-400 hover:text-zinc-200 text-xs font-mono">
-            <Link href="/login">Sign In</Link>
-          </Button>
-          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary-hover text-xs font-mono font-semibold px-4 h-8 rounded-lg transition-colors">
-            <Link href="/register">Get Started</Link>
-          </Button>
+          {session ? (
+            <>
+              <Button asChild variant="ghost" className="relative h-9 w-9 rounded-lg border border-zinc-800 bg-zinc-950 p-0 overflow-hidden">
+                <Link href="/dashboard">
+                  <Avatar className="h-full w-full rounded-lg">
+                    <AvatarFallback className="bg-zinc-900 text-zinc-300 font-semibold font-mono text-xs rounded-lg flex items-center justify-center h-full w-full">
+                      {userInitials}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+              </Button>
+              <Button 
+                onClick={() => signOut({ callbackUrl: "/" })}
+                variant="ghost" 
+                className="text-zinc-400 hover:text-zinc-200 text-xs font-mono cursor-pointer"
+              >
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost" className="text-zinc-400 hover:text-zinc-200 text-xs font-mono">
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button asChild className="bg-primary text-primary-foreground hover:bg-primary-hover text-xs font-mono font-semibold px-4 h-8 rounded-lg transition-colors">
+                <Link href="/register">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile menu trigger */}
@@ -82,13 +114,39 @@ export function Navbar() {
               );
             })}
           </div>
-          <div className="flex flex-col gap-2 pt-2 border-t border-zinc-900">
-            <Button asChild variant="outline" className="w-full h-9 border-zinc-800 bg-transparent text-zinc-300 text-xs font-mono">
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
-            </Button>
-            <Button asChild className="w-full h-9 bg-primary text-primary-foreground hover:bg-primary-hover text-xs font-mono font-semibold">
-              <Link href="/register" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
-            </Button>
+          <div className="pt-2 border-t border-zinc-900">
+            {session ? (
+              <div className="flex items-center gap-3">
+                <Button asChild variant="ghost" className="relative h-9 w-9 rounded-lg border border-zinc-800 bg-zinc-950 p-0 overflow-hidden shrink-0">
+                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                    <Avatar className="h-full w-full rounded-lg">
+                      <AvatarFallback className="bg-zinc-900 text-zinc-300 font-semibold font-mono text-xs rounded-lg flex items-center justify-center h-full w-full">
+                        {userInitials}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Link>
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signOut({ callbackUrl: "/" });
+                  }}
+                  variant="outline" 
+                  className="flex-1 h-9 border-zinc-800 bg-transparent text-zinc-300 text-xs font-mono cursor-pointer"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Button asChild variant="outline" className="w-full h-9 border-zinc-800 bg-transparent text-zinc-300 text-xs font-mono">
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
+                </Button>
+                <Button asChild className="w-full h-9 bg-primary text-primary-foreground hover:bg-primary-hover text-xs font-mono font-semibold">
+                  <Link href="/register" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

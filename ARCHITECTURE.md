@@ -133,18 +133,16 @@ DELETE /api/users/[id]    ✅ *       ❌ 403         ❌ 403
 
 The `createdBy` reference is how ownership scoping works — every API query for regular users appends `{ createdBy: session.user.id }` to the filter.
 
----
-
 ## Key Design Decisions
 
 ### Server Components for Auth Gates
 Rather than doing auth checks client-side (which causes a flash of content), the dashboard `layout.tsx` is a server component that calls `getServerSession()` before anything renders. If there's no session, the user is redirected before a single byte of dashboard HTML is sent to the browser.
 
 ### JWT over Database Sessions
-JWT strategy means no database round-trip to validate a session. The token carries `id`, `name`, `email`, and `role` — everything the dashboard needs. Sessions expire after 7 days.
+JWT strategy means no database round-trip to validate a session. The token carries `id`, `name`, `email`, and `role`, which is everything the dashboard needs. Sessions expire after 7 days.
 
 ### Direct DB Queries on the Dashboard Page
-The dashboard overview stats (`totalAgents`, `activeAgents`, `totalUsers`) are fetched with `countDocuments()` directly in the server component, not via a client-side fetch. This means the stats are always fresh on page load with no loading spinner — just server-rendered HTML.
+The dashboard overview stats (`totalAgents`, `activeAgents`, `totalUsers`) are fetched with `countDocuments()` directly in the server component, not via a client-side fetch. This means the stats are always fresh on page load with no loading spinner, just server-rendered HTML.
 
 ### Zod Validated at Both Layers
-Forms validate client-side (instant user feedback) using the same Zod schema that the API route validates server-side. This means frontend validation can never be bypassed — a direct `curl` to the API still gets rejected with a proper 400 and error message.
+Forms validate client-side (instant user feedback) using the same Zod schema that the API route validates server-side. This means frontend validation can never be bypassed; a direct `curl` to the API still gets rejected with a proper 400 and error message.
