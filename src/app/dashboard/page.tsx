@@ -3,7 +3,11 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Bot, Users, Activity, Terminal } from "lucide-react";
+import { Bot, Users, Activity, Terminal, Zap } from "lucide-react";
+import { connectDB } from "@/lib/mongodb";
+import Agent from "@/models/Agent";
+import User from "@/models/User";
+import mongoose from "mongoose";
 
 export const metadata: Metadata = {
   title: "Dashboard Overview — Aether AI",
@@ -16,32 +20,64 @@ export default async function DashboardPage() {
 
   const isAdmin = session.user?.role === "admin";
 
+  // ── Fetch real stats from DB ──────────────────────────────────────────────
+  await connectDB();
+
+  // Agents: admin sees all, user sees only their own
+  const agentQuery =
+    isAdmin ? {} : { createdBy: new mongoose.Types.ObjectId(session.user.id) };
+
+  const [totalAgents, activeAgents, totalUsers] = await Promise.all([
+    Agent.countDocuments(agentQuery),
+    Agent.countDocuments({ ...agentQuery, status: "running" }),
+    isAdmin ? User.countDocuments({}) : Promise.resolve(0),
+  ]);
+
+  // ── Stats cards ───────────────────────────────────────────────────────────
   const stats = [
     {
-      name: "Active Agents",
-      value: "0",
-      description: "Deployed AI assistants",
+      name: "Total Agents",
+      value: String(totalAgents),
+      description: isAdmin ? "Across all operators" : "Deployed by you",
       icon: Bot,
       href: "/dashboard/agents",
+      accent: "sky",
+    },
+    {
+      name: "Active Agents",
+      value: String(activeAgents),
+      description: "Currently running",
+      icon: Zap,
+      href: "/dashboard/agents",
+      accent: "emerald",
     },
     {
       name: "API Status",
-      value: "Active",
+      value: "Online",
       description: "All services operational",
       icon: Activity,
       href: "#",
+      accent: "violet",
     },
   ];
 
   if (isAdmin) {
     stats.push({
       name: "Total Users",
-      value: "1",
+      value: String(totalUsers),
       description: "Registered console accounts",
       icon: Users,
       href: "/dashboard/users",
+      accent: "amber",
     });
   }
+
+  const accentMap: Record<string, { border: string; icon: string; badge: string }> = {
+    sky:     { border: "hover:border-sky-500/30",     icon: "group-hover:text-sky-400",     badge: "bg-sky-500/10 border-sky-500/20 text-sky-400" },
+    emerald: { border: "hover:border-emerald-500/30", icon: "group-hover:text-emerald-400", badge: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" },
+    violet:  { border: "hover:border-violet-500/30",  icon: "group-hover:text-violet-400",  badge: "bg-violet-500/10 border-violet-500/20 text-violet-400" },
+    amber:   { border: "hover:border-amber-500/30",   icon: "group-hover:text-amber-400",   badge: "bg-amber-500/10 border-amber-500/20 text-amber-400" },
+  };
 
   return (
     <div className="space-y-8">
@@ -87,18 +123,21 @@ export default async function DashboardPage() {
       </div>
 
       {/* Grid Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
+          const colors = accentMap[stat.accent] ?? accentMap.sky;
           return (
             <Link
               key={stat.name}
               href={stat.href}
-              className="group block rounded-xl border border-zinc-900 bg-zinc-950/50 hover:bg-zinc-950 p-6 transition-all duration-200 hover:border-zinc-800"
+              className={`group block rounded-xl border border-zinc-900 bg-zinc-950/50 hover:bg-zinc-950 p-6 transition-all duration-200 ${colors.border}`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">{stat.name}</span>
-                <div className="rounded-lg p-2 bg-zinc-900 border border-zinc-800 text-zinc-400 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+                <span className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
+                  {stat.name}
+                </span>
+                <div className={`rounded-lg p-2 bg-zinc-900 border border-zinc-800 text-zinc-400 transition-colors ${colors.icon}`}>
                   <Icon className="h-4 w-4" />
                 </div>
               </div>
@@ -107,9 +146,7 @@ export default async function DashboardPage() {
                   {stat.value}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-zinc-400">
-                {stat.description}
-              </p>
+              <p className="mt-1 text-xs text-zinc-400">{stat.description}</p>
             </Link>
           );
         })}
@@ -127,7 +164,13 @@ export default async function DashboardPage() {
           <p><span className="text-emerald-500">[INFO]</span> Aether core initialized successfully.</p>
           <p><span className="text-emerald-500">[INFO]</span> Database connection established with primary cluster.</p>
           <p><span className="text-sky-500">[AUTH]</span> Operator session established for {session.user?.email}.</p>
-          <p className="animate-pulse"><span className="text-amber-500">[WAIT]</span> Awaiting deployment of agents...</p>
+          <p><span className="text-emerald-500">[SYNC]</span> {totalAgents} agent{totalAgents !== 1 ? "s" : ""} loaded — {activeAgents} running.</p>
+          {isAdmin && (
+            <p><span className="text-amber-500">[ADMIN]</span> {totalUsers} registered account{totalUsers !== 1 ? "s" : ""} on this node.</p>
+          )}
+          {activeAgents === 0 && (
+            <p className="animate-pulse"><span className="text-amber-500">[WAIT]</span> No active agents. Deploy one to begin.</p>
+          )}
         </div>
       </div>
     </div>

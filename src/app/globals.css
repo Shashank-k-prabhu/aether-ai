@@ -191,4 +191,34 @@
     font-family: var(--font-inter), var(--font-geist-sans), system-ui, sans-serif;
     letter-spacing: -0.02em;
   }
+
+  /* ── Custom scrollbar — global ─────────────────────────────────────────── */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0d0d10;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #3f3f46;          /* zinc-700 */
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    transition: background 0.2s ease;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #0EA5E9;          /* primary sky-blue */
+    border-color: transparent;
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #3f3f46 #0d0d10;
+  }
 }
